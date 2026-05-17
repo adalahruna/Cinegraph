@@ -1,100 +1,206 @@
-# LensaNusantara - E-commerce Photography Equipment
+# LensaNusantara - Photography Equipment E-commerce
 
-Platform e-commerce untuk penjualan kamera, lensa, dan peralatan fotografi dengan sistem role-based access control.
+Platform e-commerce sederhana untuk penjualan kamera, lensa, dan peralatan fotografi.
 
-## Tech Stack
-- **Frontend**: Next.js 14+ (App Router), Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Authentication**: Supabase Auth dengan role management
-- **Database**: PostgreSQL dengan Row Level Security (RLS)
+## 🚀 Quick Start
 
-## Quick Start
+### Prerequisites
+- Node.js 18+
+- Akun Supabase
+- Git
 
-### 1. Clone dan Install Dependencies
-```bash
-git clone <repository-url>
-cd lensa-nusantara
-npm install
+### Installation
+
+1. **Navigate to project directory**
+   ```bash
+   cd cinegraph
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Setup environment variables**
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   
+   Edit `.env.local` dengan kredensial Supabase Anda:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   ```
+
+4. **Setup database**
+   
+   Jalankan SQL scripts berikut di Supabase SQL Editor (urutan penting):
+   - `database/schema.sql` - Membuat tabel dan struktur database
+   - `database/rls-policies-fixed.sql` - Setup Row Level Security
+   - `database/storage-setup-fixed.sql` - Setup storage buckets
+
+5. **Run development server**
+   ```bash
+   npm run dev
+   ```
+
+   Buka [http://localhost:3000](http://localhost:3000) di browser.
+
+## 📁 Project Structure
+
 ```
-
-### 2. Setup Environment Variables
-```bash
-cp .env.local.example .env.local
-# Edit .env.local dengan Supabase credentials kamu
-```
-
-### 3. Setup Supabase Backend
-Ikuti instruksi lengkap di [`supabase-setup/README.md`](./supabase-setup/README.md)
-
-### 4. Run Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) dengan browser.
-
-## Features
-
-### User Features
-- 🔐 User registration dan login
-- 📱 Product catalog dengan grid layout
-- 🛒 Shopping cart management
-- 💳 Checkout process (payment simulation)
-- 📋 Order history
-
-### Admin Features
-- 👨‍💼 Admin dashboard dengan role-based access
-- 📦 Product management (CRUD operations)
-- 🖼️ Image upload ke Supabase Storage
-- 📊 Order monitoring dan management
-- 🔒 Row Level Security enforcement
-
-## Project Structure
-```
+cinegraph/
 ├── src/
-│   ├── app/              # Next.js App Router pages
-│   └── lib/
-│       └── supabase.js   # Supabase client configuration
-├── supabase-setup/       # Database setup scripts
-│   ├── 01-user-profiles.sql
-│   ├── 02-products.sql
-│   ├── 03-orders.sql
-│   ├── 04-rls-policies.sql
-│   ├── 05-storage-policies.sql
-│   ├── 06-functions-and-data.sql
-│   └── README.md
-└── .kiro/specs/          # Project specifications
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── page.js            # Homepage
+│   │   ├── products/          # Products pages
+│   │   ├── cart/              # Shopping cart
+│   │   └── login/             # Authentication
+│   └── components/            # Reusable components
+│       ├── Navbar.js
+│       └── Footer.js
+├── lib/
+│   ├── supabase.js           # Supabase client configuration
+│   └── services/             # Business logic services
+│       ├── auth.js           # Authentication service
+│       └── products.js       # Products service
+├── pages/api/                # API routes
+│   ├── auth/                 # Authentication endpoints
+│   └── products/             # Products endpoints
+├── database/                 # Database setup files
+│   ├── schema.sql
+│   ├── rls-policies-fixed.sql
+│   └── storage-setup-fixed.sql
+└── README.md                 # This file
 ```
 
-## Database Schema
-- **user_profiles**: Extends auth.users dengan role field
-- **products**: Catalog produk dengan category, price, stock
-- **orders**: Order records dengan status tracking
-- **order_items**: Detail items per order dengan price snapshot
+## 🎯 Features
 
-## Development Team
-Tim 2 orang dengan pembagian tugas:
-- **Developer 1**: Frontend & UI/UX (Next.js, Tailwind CSS)
-- **Developer 2**: Backend, Database & Auth (Supabase setup, API functions)
+### Frontend (Sudah Dibuat)
+- ✅ **Homepage** - Hero section, kategori produk, produk unggulan
+- ✅ **Product Catalog** - Daftar produk dengan filter dan search
+- ✅ **Product Detail** - Detail produk lengkap dengan spesifikasi
+- ✅ **Shopping Cart** - Keranjang belanja dengan quantity control
+- ✅ **Authentication** - Login/Register form
+- ✅ **Responsive Design** - Mobile-friendly dengan Tailwind CSS
 
-## Security Features
-- Row Level Security (RLS) policies
-- Role-based access control (User/Admin)
-- Secure file upload dengan validation
-- Session management dengan role persistence
+### Backend (Sudah Dibuat)
+- ✅ **Database Schema** - Users, products, orders, order_items
+- ✅ **Authentication API** - Register, login dengan Supabase Auth
+- ✅ **Row Level Security** - Data isolation dan access control
+- ✅ **Storage Setup** - Product image upload dengan security policies
+- ✅ **API Services** - Auth, Products, Orders, Storage services
 
-## Learn More
+## 🛠️ Development
 
-To learn more about Next.js, take a look at the following resources:
+### Available Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Tech Stack
 
-## Deploy on Vercel
+- **Frontend**: Next.js 16, React 19, Tailwind CSS 4
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Authentication**: Supabase Auth dengan RLS
+- **Styling**: Tailwind CSS dengan responsive design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Usage Examples
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Authentication
+```javascript
+import { AuthService } from '../lib/services/auth'
+
+// Register user
+const { user, error } = await AuthService.signUp(
+  'user@example.com', 
+  'password123',
+  { full_name: 'John Doe' }
+)
+
+// Login user
+const { user, session, profile } = await AuthService.signIn(
+  'user@example.com', 
+  'password123'
+)
+```
+
+### API Endpoints
+```bash
+POST /api/auth/signup    # User registration
+POST /api/auth/signin    # User login
+GET  /api/products       # Get products (akan dibuat)
+POST /api/products       # Create product (akan dibuat)
+GET  /api/orders         # Get orders (akan dibuat)
+POST /api/orders         # Create order (akan dibuat)
+```
+
+## 🎨 UI Components
+
+### Pages
+- **Homepage** (`/`) - Landing page dengan hero dan featured products
+- **Products** (`/products`) - Product catalog dengan filter
+- **Product Detail** (`/products/[id]`) - Detailed product view
+- **Cart** (`/cart`) - Shopping cart management
+- **Login** (`/login`) - Authentication forms
+
+### Components
+- **Navbar** - Navigation dengan responsive menu
+- **Footer** - Site footer dengan links dan contact info
+
+## 🔧 Customization
+
+### Styling
+- Edit `src/app/globals.css` untuk global styles
+- Modify Tailwind classes dalam components
+- Customize color scheme di Tailwind config
+
+### Backend Integration
+- Semua backend services sudah siap di `lib/services/`
+- API endpoints sudah dibuat di `pages/api/`
+- Database schema dan policies sudah setup
+
+## 📚 Next Steps
+
+### Untuk Development Lanjutan:
+1. **Integrate Real Data** - Connect frontend dengan backend APIs
+2. **Add Admin Panel** - Interface untuk manage products dan orders
+3. **Payment Integration** - Integrate payment gateway
+4. **Order Management** - Complete order workflow
+5. **Image Upload** - Product image management
+6. **Search & Filter** - Advanced product filtering
+7. **User Dashboard** - Order history dan profile management
+
+### Untuk Production:
+1. **Environment Setup** - Production environment variables
+2. **Performance Optimization** - Image optimization, caching
+3. **SEO** - Meta tags, sitemap, structured data
+4. **Analytics** - Google Analytics integration
+5. **Error Monitoring** - Sentry atau similar service
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 📞 Support
+
+Untuk pertanyaan atau bantuan:
+- Email: info@lensanusantara.com
+- WhatsApp: +62 812 3456 7890
+
+---
+
+**LensaNusantara** - Toko Peralatan Fotografi Terlengkap di Indonesia 📷
