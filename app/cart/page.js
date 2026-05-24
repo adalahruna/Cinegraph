@@ -1,41 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useCart } from '../../contexts/CartContext'
+import { AuthService } from '../../lib/services/auth'
 
 export default function CartPage() {
-  // Mock cart data
-  const [cartItems, setCartItems] = useState([
-    {
-      id: '1',
-      name: 'Sony Alpha A7 IV',
-      price: 25000000,
-      quantity: 1,
-      image: null,
-      category: 'Kamera'
-    },
-    {
-      id: '2',
-      name: 'Canon RF 24-70mm f/2.8L',
-      price: 18500000,
-      quantity: 1,
-      image: null,
-      category: 'Lensa'
-    }
-  ])
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity === 0) {
-      setCartItems(cartItems.filter(item => item.id !== id))
-    } else {
-      setCartItems(cartItems.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      ))
-    }
-  }
-
-  const removeItem = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id))
-  }
+  const { items: cartItems, updateQuantity, removeFromCart, totalPrice, checkout } = useCart()
+  const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [checkoutError, setCheckoutError] = useState('')
+  const router = useRouter()
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
@@ -45,7 +20,55 @@ export default function CartPage() {
     }).format(price)
   }
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const handleCheckout = async () => {
+    setIsCheckingOut(true)
+    setCheckoutError('')
+
+    try {
+      console.log('Starting checkout process...')
+      
+      // Check if user is logged in
+      const { user } = await AuthService.getCurrentUser()
+      if (!user) {
+        console.log('User not logged in, redirecting to login')
+        router.push('/login?redirect=/cart')
+        return
+      }
+      
+      console.log('User is logged in:', user.id)
+
+      // Process checkout
+      const result = await checkout({
+        shippingCost: 50000,
+        shippingAddress: {
+          street: 'Default Address',
+          city: 'Jakarta',
+          postal_code: '12345',
+          country: 'Indonesia'
+        },
+        notes: 'Order from cart'
+      })
+      
+      console.log('Checkout completed with result:', result)
+
+      if (result.error) {
+        console.error('Checkout failed:', result.error)
+        setCheckoutError(result.error)
+      } else {
+        console.log('Checkout successful, redirecting to profile')
+        // Success - redirect to success page or show success message
+        alert('Pesanan berhasil dibuat! Terima kasih telah berbelanja di CineGraph.')
+        router.push('/profile') // Redirect to profile to see order history
+      }
+    } catch (error) {
+      console.error('Checkout error in handleCheckout:', error)
+      setCheckoutError(error.message || 'Terjadi kesalahan saat memproses pesanan')
+    } finally {
+      setIsCheckingOut(false)
+    }
+  }
+
+  const subtotal = totalPrice
   const shipping = 50000 // Fixed shipping cost
   const total = subtotal + shipping
 
@@ -83,12 +106,12 @@ export default function CartPage() {
             <p className="text-gray-400 mb-8 max-w-md mx-auto">
               Sepertinya Anda belum menambahkan perlengkapan fotografi apa pun ke keranjang Anda.
             </p>
-            <a 
+            <Link 
               href="/products"
               className="inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300"
             >
               Mulai Eksplorasi Produk
-            </a>
+            </Link>
           </div>
         ) : (
           /* Filled Cart State */
@@ -145,7 +168,7 @@ export default function CartPage() {
                         
                         {/* Remove Button */}
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeFromCart(item.id)}
                           className="text-gray-500 hover:text-red-400 p-2 transition-colors rounded-full hover:bg-red-500/10"
                           title="Hapus item"
                         >
@@ -187,16 +210,33 @@ export default function CartPage() {
                   </div>
                 </div>
                 
-                <button className="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300 mb-4">
-                  Beli Sekarang
+                {checkoutError && (
+                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+                    {checkoutError}
+                  </div>
+                )}
+                
+                <button 
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut || cartItems.length === 0}
+                  className="w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300 mb-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                >
+                  {isCheckingOut ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Memproses...
+                    </>
+                  ) : (
+                    'Beli Sekarang'
+                  )}
                 </button>
                 
-                <a 
+                <Link 
                   href="/products"
                   className="w-full flex justify-center py-3.5 px-4 border border-white/10 rounded-xl shadow-sm text-sm font-bold text-gray-300 bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-gray-500 transition-all duration-300"
                 >
                   Lanjut Belanja
-                </a>
+                </Link>
                 
                 {/* Shipping Info - Dark Mode Adapted */}
                 <div className="mt-8 p-4 bg-[#0a0a0f]/50 border border-white/5 rounded-xl">

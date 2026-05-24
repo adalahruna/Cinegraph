@@ -1,70 +1,72 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useCart } from '../../contexts/CartContext'
+
+// Mock data untuk demo - moved outside component to avoid dependency issues
+const mockProducts = [
+  {
+    id: '550e8400-e29b-41d4-a716-446655440001',
+    name: 'Sony Alpha A7 IV',
+    category: 'Kamera',
+    price: 25000000,
+    stock: 5,
+    description: 'Mirrorless camera dengan sensor 33MP dan video 4K',
+    image_url: null
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440002',
+    name: 'Canon RF 24-70mm f/2.8L',
+    category: 'Lensa',
+    price: 18500000,
+    stock: 3,
+    description: 'Lensa zoom profesional untuk Canon RF mount',
+    image_url: null
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440003',
+    name: 'Manfrotto Carbon Tripod',
+    category: 'Tripod',
+    price: 3200000,
+    stock: 8,
+    description: 'Tripod carbon fiber ringan dan stabil',
+    image_url: null
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440004',
+    name: 'Nikon Z6 II',
+    category: 'Kamera',
+    price: 22000000,
+    stock: 4,
+    description: 'Full frame mirrorless dengan dual card slots',
+    image_url: null
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440005',
+    name: 'Sony FE 85mm f/1.4 GM',
+    category: 'Lensa',
+    price: 21000000,
+    stock: 2,
+    description: 'Lensa portrait premium dengan bokeh yang indah',
+    image_url: null
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440006',
+    name: 'Godox AD200Pro',
+    category: 'Aksesoris',
+    price: 4500000,
+    stock: 6,
+    description: 'Portable flash dengan power 200Ws',
+    image_url: null
+  }
+]
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
-
-  // Mock data untuk demo
-  const mockProducts = [
-    {
-      id: '1',
-      name: 'Sony Alpha A7 IV',
-      category: 'Kamera',
-      price: 25000000,
-      stock: 5,
-      description: 'Mirrorless camera dengan sensor 33MP dan video 4K',
-      image_url: null
-    },
-    {
-      id: '2',
-      name: 'Canon RF 24-70mm f/2.8L',
-      category: 'Lensa',
-      price: 18500000,
-      stock: 3,
-      description: 'Lensa zoom profesional untuk Canon RF mount',
-      image_url: null
-    },
-    {
-      id: '3',
-      name: 'Manfrotto Carbon Tripod',
-      category: 'Tripod',
-      price: 3200000,
-      stock: 8,
-      description: 'Tripod carbon fiber ringan dan stabil',
-      image_url: null
-    },
-    {
-      id: '4',
-      name: 'Nikon Z6 II',
-      category: 'Kamera',
-      price: 22000000,
-      stock: 4,
-      description: 'Full frame mirrorless dengan dual card slots',
-      image_url: null
-    },
-    {
-      id: '5',
-      name: 'Sony FE 85mm f/1.4 GM',
-      category: 'Lensa',
-      price: 21000000,
-      stock: 2,
-      description: 'Lensa portrait premium dengan bokeh yang indah',
-      image_url: null
-    },
-    {
-      id: '6',
-      name: 'Godox AD200Pro',
-      category: 'Aksesoris',
-      price: 4500000,
-      stock: 6,
-      description: 'Portable flash dengan power 200Ws',
-      image_url: null
-    }
-  ]
+  const { addToCart } = useCart()
 
   useEffect(() => {
     // Simulasi loading
@@ -72,7 +74,7 @@ export default function ProductsPage() {
       setProducts(mockProducts)
       setLoading(false)
     }, 1000)
-  }, [])
+  }, []) // Now no dependency issues
 
   const categories = ['Kamera', 'Lensa', 'Tripod', 'Aksesoris']
 
@@ -91,6 +93,11 @@ export default function ProductsPage() {
       currency: 'IDR',
       minimumFractionDigits: 0
     }).format(price)
+  }
+
+  const handleAddToCart = (product) => {
+    addToCart(product, 1)
+    alert(`${product.name} berhasil ditambahkan ke keranjang!`)
   }
 
   if (loading) {
@@ -218,6 +225,7 @@ export default function ProductsPage() {
 
                 <div className="space-y-2 mt-auto">
                   <button 
+                    onClick={() => handleAddToCart(product)}
                     className="w-full relative flex justify-center py-2.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:from-purple-500 disabled:hover:to-blue-400"
                     disabled={product.stock === 0}
                   >
@@ -243,7 +251,7 @@ export default function ProductsPage() {
               Produk Tidak Ditemukan
             </h3>
             <p className="text-gray-400 max-w-md mx-auto">
-              Maaf, kami tidak dapat menemukan produk yang sesuai dengan filter atau kata kunci "{searchTerm}". Silakan coba kata kunci lain.
+              Maaf, kami tidak dapat menemukan produk yang sesuai dengan filter atau kata kunci &ldquo;{searchTerm}&rdquo;. Silakan coba kata kunci lain.
             </p>
             <button 
               onClick={() => {

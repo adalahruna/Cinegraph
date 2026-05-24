@@ -1,8 +1,23 @@
 'use client'
 
 import Link from 'next/link'
+import { useCart } from '../contexts/CartContext'
 
 export default function Home() {
+  const { addToCart } = useCart()
+
+  // Mock products data untuk featured section
+  const featuredProducts = [
+    { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Sony Alpha A7 IV', price: 25000000, category: 'Kamera', icon: '📷', tag: 'Best Seller', stock: 5 },
+    { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Canon RF 24-70mm f/2.8L', price: 18500000, category: 'Lensa', icon: '🔍', tag: 'New', stock: 3 },
+    { id: '550e8400-e29b-41d4-a716-446655440003', name: 'Manfrotto Carbon Tripod', price: 3200000, category: 'Tripod', icon: '🎯', tag: null, stock: 8 },
+  ]
+
+  const handleAddToCart = (product) => {
+    addToCart(product, 1)
+    // Optional: Show toast notification
+    alert(`${product.name} berhasil ditambahkan ke keranjang!`)
+  }
   return (
     <div className="min-h-screen" style={{
       background: 'linear-gradient(160deg, #16161c 0%, #1c1c24 50%, #18181f 100%)',
@@ -43,7 +58,7 @@ export default function Home() {
           color: 'rgba(255,255,255,0.025)', letterSpacing: -8, whiteSpace: 'nowrap',
           userSelect: 'none', pointerEvents: 'none', lineHeight: 1,
         }}>
-          CineGraph
+          LensaNusantara
         </div>
 
         <div style={{
@@ -239,12 +254,8 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { name: 'Sony Alpha A7 IV',         price: 'Rp 25.000.000', category: 'Kamera',  icon: '📷', tag: 'Best Seller' },
-              { name: 'Canon RF 24-70mm f/2.8L',  price: 'Rp 18.500.000', category: 'Lensa',   icon: '🔍', tag: 'New' },
-              { name: 'Manfrotto Carbon Tripod',   price: 'Rp 3.200.000',  category: 'Tripod',  icon: '🎯', tag: null },
-            ].map((product, index) => (
-              <div key={index} style={{
+            {featuredProducts.map((product, index) => (
+              <div key={product.id} style={{
                 background: 'rgba(255,255,255,0.035)',
                 border: '0.5px solid rgba(255,255,255,0.08)',
                 borderRadius: 18, overflow: 'hidden',
@@ -307,28 +318,41 @@ export default function Home() {
                     background: 'linear-gradient(90deg, #c4b5fd, #93c5fd)',
                     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                   }}>
-                    {product.price}
+                    {new Intl.NumberFormat('id-ID', {
+                      style: 'currency',
+                      currency: 'IDR',
+                      minimumFractionDigits: 0
+                    }).format(product.price)}
                   </p>
-                  <button style={{
-                    width: '100%', padding: '11px 0', borderRadius: 10,
-                    background: 'rgba(167,139,250,0.12)',
-                    border: '0.5px solid rgba(167,139,250,0.3)',
-                    color: '#c4b5fd', fontSize: 13.5, fontWeight: 600,
-                    cursor: 'pointer', transition: 'all .2s',
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}
+                  <button 
+                    onClick={() => handleAddToCart(product)}
+                    disabled={product.stock === 0}
+                    style={{
+                      width: '100%', padding: '11px 0', borderRadius: 10,
+                      background: product.stock > 0 ? 'rgba(167,139,250,0.12)' : 'rgba(107,114,128,0.12)',
+                      border: `0.5px solid ${product.stock > 0 ? 'rgba(167,139,250,0.3)' : 'rgba(107,114,128,0.3)'}`,
+                      color: product.stock > 0 ? '#c4b5fd' : '#9ca3af',
+                      fontSize: 13.5, fontWeight: 600,
+                      cursor: product.stock > 0 ? 'pointer' : 'not-allowed',
+                      transition: 'all .2s',
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
                     onMouseEnter={e => {
-                      const el = e.currentTarget
-                      el.style.background = 'rgba(167,139,250,0.22)'
-                      el.style.borderColor = 'rgba(167,139,250,0.5)'
+                      if (product.stock > 0) {
+                        const el = e.currentTarget
+                        el.style.background = 'rgba(167,139,250,0.22)'
+                        el.style.borderColor = 'rgba(167,139,250,0.5)'
+                      }
                     }}
                     onMouseLeave={e => {
-                      const el = e.currentTarget
-                      el.style.background = 'rgba(167,139,250,0.12)'
-                      el.style.borderColor = 'rgba(167,139,250,0.3)'
+                      if (product.stock > 0) {
+                        const el = e.currentTarget
+                        el.style.background = 'rgba(167,139,250,0.12)'
+                        el.style.borderColor = 'rgba(167,139,250,0.3)'
+                      }
                     }}
                   >
-                    Tambah ke Keranjang
+                    {product.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
                   </button>
                 </div>
               </div>

@@ -4,14 +4,15 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthService } from '../lib/services/auth'
-import { supabase } from '../lib/supabase' // 🔥 FIX
+import { supabase } from '../lib/supabase'
+import { useCart } from '../contexts/CartContext'
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const { totalItems } = useCart()
 
   useEffect(() => {
     const checkUser = async () => {
@@ -23,7 +24,6 @@ export default function Navbar() {
 
     checkUser()
 
-    // 🔥 FIX: pakai supabase langsung
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange(async (event) => {
@@ -179,7 +179,7 @@ export default function Navbar() {
   <Link href="/" className="nav-link">Home</Link>
   <Link href="/products" className="nav-link">Products</Link>
 
-  {/* 🔥 CART BALIK */}
+  {/* 🔥 CART dengan Dynamic Count */}
   <Link href="/cart" className="nav-link">
     Cart
     <span style={{
@@ -190,13 +190,13 @@ export default function Navbar() {
       width: 18,
       height: 18,
       borderRadius: '50%',
-      background: 'rgba(167,139,250,0.2)',
-      border: '0.5px solid rgba(167,139,250,0.35)',
+      background: totalItems > 0 ? 'rgba(167,139,250,0.3)' : 'rgba(167,139,250,0.2)',
+      border: `0.5px solid ${totalItems > 0 ? 'rgba(167,139,250,0.5)' : 'rgba(167,139,250,0.35)'}`,
       fontSize: 10,
       fontWeight: 700,
-      color: '#c4b5fd',
+      color: totalItems > 0 ? '#a78bfa' : '#c4b5fd',
     }}>
-      0
+      {totalItems}
     </span>
   </Link>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useCart } from '../../../contexts/CartContext'
 // Menghapus import Next.js yang menyebabkan error di preview
 // import { useParams } from 'next/navigation'
 // import Link from 'next/link'
@@ -12,11 +13,12 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('spesifikasi')
+  const { addToCart } = useCart()
 
   // Mock product data
   const mockProducts = {
-    '1': {
-      id: '1',
+    '550e8400-e29b-41d4-a716-446655440001': {
+      id: '550e8400-e29b-41d4-a716-446655440001',
       name: 'Sony Alpha A7 IV',
       category: 'Kamera',
       price: 25000000,
@@ -44,8 +46,8 @@ export default function ProductDetailPage() {
       ],
       images: ['/placeholder-camera.jpg']
     },
-    '2': {
-      id: '2',
+    '550e8400-e29b-41d4-a716-446655440002': {
+      id: '550e8400-e29b-41d4-a716-446655440002',
       name: 'Canon RF 24-70mm f/2.8L',
       category: 'Lensa',
       price: 18500000,
@@ -79,7 +81,7 @@ export default function ProductDetailPage() {
     // Simulasi loading
     setTimeout(() => {
       // Untuk demo, jika id tidak ditemukan, tampilkan produk 1 sebagai fallback sementara
-      const productId = params?.id || '1'; 
+      const productId = params?.id || '550e8400-e29b-41d4-a716-446655440001'; 
       const productData = mockProducts[productId]
       setProduct(productData)
       setLoading(false)
@@ -95,7 +97,10 @@ export default function ProductDetailPage() {
   }
 
   const handleAddToCart = () => {
-    alert(`Menambahkan ${quantity} unit ${product.name} ke keranjang`)
+    if (product && product.stock > 0) {
+      addToCart(product, quantity)
+      alert(`${quantity} unit ${product.name} berhasil ditambahkan ke keranjang!`)
+    }
   }
 
   if (loading) {
