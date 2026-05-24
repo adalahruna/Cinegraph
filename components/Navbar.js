@@ -1,70 +1,231 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { AuthService } from '../lib/services/auth'
+import { supabase } from '../lib/supabase' // 🔥 FIX
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { user, profile } = await AuthService.getCurrentUser()
+      setUser(user)
+      setProfile(profile)
+      setIsLoading(false)
+    }
+
+    checkUser()
+
+    // 🔥 FIX: pakai supabase langsung
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        const { user, profile } = await AuthService.getCurrentUser()
+        setUser(user)
+        setProfile(profile)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+        setProfile(null)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    await AuthService.signOut()
+    setUser(null)
+    setProfile(null)
+    router.push('/')
+    router.refresh()
+  }
 
   return (
-    <nav className="bg-white shadow-sm border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-bold text-blue-600">LensaNusantara</h1>
-            </Link>
-          </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
-              Home
-            </Link>
-            <Link href="/products" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
-              Products
-            </Link>
-            <Link href="/cart" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
-              Cart (0)
-            </Link>
-            <Link href="/login" className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-              Login
-            </Link>
-          </div>
+        .nav-link {
+          font-size: 13.5px;
+          font-weight: 400;
+          color: rgba(226,226,232,0.55);
+          text-decoration: none;
+          padding: 6px 12px;
+          border-radius: 8px;
+          transition: color .2s, background .2s;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .nav-link:hover {
+          color: #e2e2e8;
+          background: rgba(255,255,255,0.06);
+        }
+        .nav-link-mobile {
+          display: block;
+          font-size: 15px;
+          font-weight: 400;
+          color: rgba(226,226,232,0.6);
+          text-decoration: none;
+          padding: 12px 16px;
+          border-radius: 10px;
+          transition: color .2s, background .2s;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .nav-link-mobile:hover {
+          color: #e2e2e8;
+          background: rgba(255,255,255,0.06);
+        }
+        .btn-login {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 18px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #a78bfa, #60b4e8);
+          color: #fff;
+          font-size: 13px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: opacity .2s, transform .15s;
+          font-family: 'DM Sans', sans-serif;
+          border: none;
+          cursor: pointer;
+        }
+        .btn-login:hover {
+          opacity: 0.88;
+          transform: translateY(-1px);
+        }
+        .btn-logout {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 18px;
+          border-radius: 10px;
+          background: rgba(239, 68, 68, 0.1);
+          border: 0.5px solid rgba(239, 68, 68, 0.2);
+          color: #f87171;
+          font-size: 13px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: background .2s, transform .15s;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+        }
+        .btn-logout:hover {
+          background: rgba(239, 68, 68, 0.2);
+          transform: translateY(-1px);
+        }
+        .btn-login-mobile {
+          display: block;
+          padding: 12px 16px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(96,180,232,0.15));
+          border: 0.5px solid rgba(167,139,250,0.35);
+          color: #c4b5fd;
+          font-size: 15px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: background .2s;
+          font-family: 'DM Sans', sans-serif;
+        }
+        .btn-login-mobile:hover {
+          background: linear-gradient(135deg, rgba(167,139,250,0.3), rgba(96,180,232,0.22));
+        }
+        .hamburger {
+          width: 36px; height: 36px;
+          border-radius: 9px;
+          background: rgba(255,255,255,0.05);
+          border: 0.5px solid rgba(255,255,255,0.1);
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer;
+          color: rgba(226,226,232,0.65);
+          transition: background .2s, color .2s;
+        }
+      `}</style>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+      {/* 🔥 UI KAMU TIDAK DIUBAH */}
+      <nav style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(22,22,28,0.75)',
+        backdropFilter: 'blur(24px)',
+        borderBottom: '0.5px solid rgba(255,255,255,0.07)',
+      }}>
+        <div className="max-w-7xl mx-auto px-4">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
+
+            <Link href="/">
+              <span style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize: 20,
+                fontWeight: 800,
+                background: 'linear-gradient(90deg, #c4b5fd, #93c5fd)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                CineGraph
+              </span>
+            </Link>
+
+            <div className="hidden md:flex" style={{ alignItems: 'center', gap: 4 }}>
+  <Link href="/" className="nav-link">Home</Link>
+  <Link href="/products" className="nav-link">Products</Link>
+
+  {/* 🔥 CART BALIK */}
+  <Link href="/cart" className="nav-link">
+    Cart
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 6,
+      width: 18,
+      height: 18,
+      borderRadius: '50%',
+      background: 'rgba(167,139,250,0.2)',
+      border: '0.5px solid rgba(167,139,250,0.35)',
+      fontSize: 10,
+      fontWeight: 700,
+      color: '#c4b5fd',
+    }}>
+      0
+    </span>
+  </Link>
+
+  <Link href="/profile" className="nav-link">Profile</Link>
+
+  {profile?.role === 'admin' && (
+    <Link
+      href="/dashboard"
+      className="nav-link"
+      style={{ color: '#a78bfa', fontWeight: '600' }}
+    >
+      Dashboard
+    </Link>
+  )}
+</div>
+
+            <div className="hidden md:flex">
+              {!isLoading && (
+                user ? (
+                  <button onClick={handleLogout} className="btn-logout">Logout</button>
+                ) : (
+                  <Link href="/login" className="btn-login">Login</Link>
+                )
+              )}
+            </div>
+
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link href="/" className="block text-gray-700 hover:text-blue-600 px-3 py-2 text-base font-medium">
-                Home
-              </Link>
-              <Link href="/products" className="block text-gray-700 hover:text-blue-600 px-3 py-2 text-base font-medium">
-                Products
-              </Link>
-              <Link href="/cart" className="block text-gray-700 hover:text-blue-600 px-3 py-2 text-base font-medium">
-                Cart (0)
-              </Link>
-              <Link href="/login" className="block bg-blue-600 text-white px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">
-                Login
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
+      </nav>
+    </>
   )
 }

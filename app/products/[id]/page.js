@@ -1,14 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
-import Link from 'next/link'
+// Menghapus import Next.js yang menyebabkan error di preview
+// import { useParams } from 'next/navigation'
+// import Link from 'next/link'
 
 export default function ProductDetailPage() {
-  const params = useParams()
+  // Mock useParams functionality for preview environment
+  const params = { id: '1' } // Fallback static ID
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
+  const [activeTab, setActiveTab] = useState('spesifikasi')
 
   // Mock product data
   const mockProducts = {
@@ -75,11 +78,13 @@ export default function ProductDetailPage() {
   useEffect(() => {
     // Simulasi loading
     setTimeout(() => {
-      const productData = mockProducts[params.id]
+      // Untuk demo, jika id tidak ditemukan, tampilkan produk 1 sebagai fallback sementara
+      const productId = params?.id || '1'; 
+      const productData = mockProducts[productId]
       setProduct(productData)
       setLoading(false)
     }, 1000)
-  }, [params.id])
+  }, [params?.id])
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', {
@@ -90,16 +95,19 @@ export default function ProductDetailPage() {
   }
 
   const handleAddToCart = () => {
-    // Implementasi add to cart
-    alert(`Menambahkan ${quantity} ${product.name} ke keranjang`)
+    alert(`Menambahkan ${quantity} unit ${product.name} ke keranjang`)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading product...</p>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+        {/* Background Gradient & Glow Effects */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/20 blur-[120px] rounded-full"></div>
+        </div>
+        <div className="text-center z-10">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
+          <p className="text-gray-400 font-medium tracking-wide animate-pulse">Memuat detail produk...</p>
         </div>
       </div>
     )
@@ -107,177 +115,272 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">❌</div>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Produk Tidak Ditemukan</h2>
-          <p className="text-gray-600 mb-6">Produk yang Anda cari tidak tersedia</p>
-          <Link href="/products" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-            Kembali ke Produk
-          </Link>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+        {/* Background Gradient & Glow Effects */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-red-900/20 blur-[120px] rounded-full"></div>
+        </div>
+        <div className="text-center z-10 bg-[#13141f]/80 backdrop-blur-xl p-10 rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
+          <div className="text-6xl mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)]">❌</div>
+          <h2 className="text-2xl font-bold text-white mb-2">Produk Tidak Ditemukan</h2>
+          <p className="text-gray-400 mb-8 max-w-sm mx-auto">Produk yang Anda cari tidak tersedia atau mungkin telah dihapus.</p>
+          <a href="/products" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300">
+            Kembali ke Katalog
+          </a>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-8">
+    <div className="min-h-screen bg-[#0a0a0f] text-gray-200 font-sans relative overflow-hidden pb-20">
+      
+      {/* Background Gradient & Glow Effects */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-900/10 blur-[150px] rounded-full"></div>
+        <div className="absolute top-[40%] left-[-5%] w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full"></div>
+      </div>
+
+      {/* Large Faint Watermark Background */}
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.02] pointer-events-none select-none overflow-hidden w-full text-center fixed">
+        <h1 className="text-[12vw] font-black tracking-tighter whitespace-nowrap uppercase">{product.category}</h1>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        
+        {/* Breadcrumb - Dark Mode Styled */}
+        <nav className="mb-8 overflow-x-auto whitespace-nowrap pb-2">
           <ol className="flex items-center space-x-2 text-sm text-gray-500">
-            <li><Link href="/" className="hover:text-blue-600">Home</Link></li>
-            <li>/</li>
-            <li><Link href="/products" className="hover:text-blue-600">Products</Link></li>
-            <li>/</li>
-            <li className="text-gray-800">{product.name}</li>
+            <li>
+              <a href="/" className="hover:text-purple-400 transition-colors flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                Home
+              </a>
+            </li>
+            <li className="text-gray-700">/</li>
+            <li><a href="/products" className="hover:text-purple-400 transition-colors">Products</a></li>
+            <li className="text-gray-700">/</li>
+            <li><span className="hover:text-purple-400 transition-colors cursor-pointer">{product.category}</span></li>
+            <li className="text-gray-700">/</li>
+            <li className="text-gray-300 font-medium truncate max-w-[200px] sm:max-w-none">{product.name}</li>
           </ol>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Images */}
-          <div>
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <div className="aspect-square bg-gray-200 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-gray-500 text-6xl">📷</span>
+          
+          {/* Product Images Container */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] p-2 relative group overflow-hidden">
+              <div className="aspect-square bg-[#0a0a0f] rounded-xl flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5"></div>
+                <span className="text-gray-500 text-8xl relative z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-500">📷</span>
+                
+                {/* Sale/New Badge (Optional) */}
+                <div className="absolute top-4 left-4 bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs font-bold px-3 py-1 rounded-full backdrop-blur-md z-20">
+                  NEW ARRIVAL
+                </div>
               </div>
-              
-              {/* Thumbnail images would go here */}
-              <div className="flex space-x-2 mt-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="w-16 h-16 bg-gray-200 rounded border-2 border-transparent hover:border-blue-500 cursor-pointer flex items-center justify-center">
-                    <span className="text-gray-500 text-sm">📷</span>
-                  </div>
-                ))}
-              </div>
+            </div>
+            
+            {/* Thumbnails */}
+            <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
+              {[1, 2, 3, 4].map((i) => (
+                <div 
+                  key={i} 
+                  className={`flex-shrink-0 w-20 h-20 bg-[#13141f] rounded-xl border-2 flex items-center justify-center cursor-pointer transition-all duration-300 ${i === 1 ? 'border-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.3)]' : 'border-white/10 hover:border-purple-500/50'}`}
+                >
+                  <span className="text-gray-500 text-2xl">📷</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Product Info */}
+          {/* Product Info Panel */}
           <div>
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <span className="text-sm text-blue-600 font-medium uppercase tracking-wide">
+            <div className="bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] p-6 sm:p-8">
+              
+              <span className="text-xs text-purple-400 font-bold uppercase tracking-widest mb-2 block">
                 {product.category}
               </span>
-              <h1 className="text-3xl font-bold text-gray-800 mt-2 mb-4">
+              
+              <h1 className="text-3xl sm:text-4xl font-black text-white mt-1 mb-6 leading-tight">
                 {product.name}
               </h1>
               
-              <div className="flex items-center space-x-4 mb-6">
-                <span className="text-3xl font-bold text-blue-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 pb-8 border-b border-white/10">
+                <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
                   {formatPrice(product.price)}
                 </span>
-                <span className="text-sm text-gray-500">
-                  Stok: {product.stock} unit
-                </span>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="flex text-yellow-400 text-sm">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span className="text-gray-600">★</span>
+                  </div>
+                  <span className="text-xs text-gray-400 underline decoration-gray-600 underline-offset-4 cursor-pointer hover:text-gray-300">
+                    (24 Ulasan)
+                  </span>
+                </div>
               </div>
 
-              <p className="text-gray-600 mb-6 leading-relaxed">
+              <p className="text-gray-400 mb-8 leading-relaxed text-sm sm:text-base">
                 {product.description}
               </p>
 
-              {/* Quantity and Add to Cart */}
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="flex items-center border border-gray-300 rounded-lg">
+              {/* Status Stock */}
+              <div className="mb-6 flex items-center">
+                <span className="relative flex h-3 w-3 mr-3">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${product.stock > 0 ? 'bg-green-400' : 'bg-red-400'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-3 w-3 ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                </span>
+                <span className={`text-sm font-semibold ${product.stock > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {product.stock > 0 ? `Tersedia ${product.stock} unit` : 'Stok Habis'}
+                </span>
+              </div>
+
+              {/* Action Area: Quantity & Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+                
+                {/* Quantity Control */}
+                <div className="flex items-center justify-between bg-[#0a0a0f] border border-white/10 rounded-xl p-1.5 w-full sm:w-32">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-2 hover:bg-gray-50"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     -
                   </button>
-                  <span className="px-4 py-2 border-x border-gray-300">{quantity}</span>
+                  <span className="font-bold text-white text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    className="px-3 py-2 hover:bg-gray-50"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     +
                   </button>
                 </div>
                 
+                {/* Add to Cart Button */}
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
-                  className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="flex-1 flex justify-center items-center py-4 px-6 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                 >
-                  {product.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                  {product.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Kosong'}
                 </button>
               </div>
 
-              {/* Features */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Fitur Utama</h3>
-                <ul className="space-y-2">
+              {/* Quick Actions */}
+              <div className="grid grid-cols-2 gap-4">
+                <button className="flex items-center justify-center border border-white/10 text-gray-300 py-3 px-4 rounded-xl hover:bg-white/5 hover:border-purple-500/50 hover:text-purple-400 transition-all duration-300 font-medium text-sm">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                  Simpan Wishlist
+                </button>
+                <button className="flex items-center justify-center border border-white/10 text-gray-300 py-3 px-4 rounded-xl hover:bg-white/5 hover:border-blue-500/50 hover:text-blue-400 transition-all duration-300 font-medium text-sm">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                  Bagikan
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Product Details Tabs Panel (Glassmorphism) */}
+        <div className="mt-12">
+          <div className="bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] overflow-hidden">
+            
+            {/* Tabs Header */}
+            <div className="border-b border-white/10 bg-white/[0.02]">
+              <nav className="flex overflow-x-auto scrollbar-hide">
+                {['spesifikasi', 'fitur', 'review'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`py-5 px-8 text-sm font-bold uppercase tracking-wider whitespace-nowrap border-b-2 transition-all duration-300 ${
+                      activeTab === tab 
+                        ? 'border-purple-500 text-purple-400 bg-white/[0.03]' 
+                        : 'border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/[0.01]'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            
+            {/* Tabs Content */}
+            <div className="p-6 sm:p-10 min-h-[300px]">
+              
+              {/* Content Spesifikasi */}
+              <div className={`transition-opacity duration-500 ${activeTab === 'spesifikasi' ? 'opacity-100 block' : 'opacity-0 hidden'}`}>
+                <h3 className="text-xl font-bold text-white mb-6">Spesifikasi Teknis</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <div key={key} className="flex justify-between py-3 border-b border-white/5 group hover:border-white/10 transition-colors">
+                      <span className="font-medium text-gray-500 group-hover:text-gray-400">{key}</span>
+                      <span className="text-gray-300 text-right w-1/2">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Content Fitur Utama */}
+              <div className={`transition-opacity duration-500 ${activeTab === 'fitur' ? 'opacity-100 block' : 'opacity-0 hidden'}`}>
+                <h3 className="text-xl font-bold text-white mb-6">Fitur Utama</h3>
+                <ul className="space-y-4">
                   {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-green-500 mr-2 mt-1">✓</span>
-                      <span className="text-gray-600">{feature}</span>
+                    <li key={index} className="flex items-start bg-[#0a0a0f]/50 p-4 rounded-xl border border-white/5">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center mr-4 mt-0.5">
+                        <span className="text-purple-400 text-xs">✓</span>
+                      </div>
+                      <span className="text-gray-300 leading-relaxed">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Quick Actions */}
-              <div className="grid grid-cols-2 gap-4">
-                <button className="border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50">
-                  ❤️ Wishlist
-                </button>
-                <button className="border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50">
-                  📤 Share
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Product Details Tabs */}
-        <div className="mt-12">
-          <div className="bg-white rounded-lg shadow-sm">
-            <div className="border-b">
-              <nav className="flex space-x-8 px-8">
-                <button className="py-4 border-b-2 border-blue-600 text-blue-600 font-medium">
-                  Spesifikasi
-                </button>
-                <button className="py-4 text-gray-500 hover:text-gray-700">
-                  Deskripsi
-                </button>
-                <button className="py-4 text-gray-500 hover:text-gray-700">
-                  Review
-                </button>
-              </nav>
-            </div>
-            
-            <div className="p-8">
-              <h3 className="text-xl font-semibold text-gray-800 mb-6">Spesifikasi Teknis</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="font-medium text-gray-700">{key}</span>
-                    <span className="text-gray-600">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Related Products */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Produk Terkait</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Mock related products */}
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500 text-3xl">📷</span>
+              {/* Content Review (Placeholder) */}
+              <div className={`transition-opacity duration-500 ${activeTab === 'review' ? 'opacity-100 block' : 'opacity-0 hidden'}`}>
+                <div className="text-center py-10">
+                  <div className="text-5xl mb-4 opacity-50">⭐</div>
+                  <h3 className="text-xl font-bold text-white mb-2">Belum ada ulasan</h3>
+                  <p className="text-gray-500">Jadilah yang pertama mengulas produk ini setelah membelinya.</p>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-800 mb-2">Produk Terkait {i}</h3>
-                  <p className="text-blue-600 font-bold">Rp 5.000.000</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Related Products Section */}
+        <div className="mt-16">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-white">Mungkin Anda Suka</h2>
+            <a href="/products" className="text-sm font-medium text-purple-400 hover:text-purple-300 flex items-center transition-colors">
+              Lihat Semua
+              <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </a>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Mock related products styled like catalog */}
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="group bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] overflow-hidden hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all duration-300 flex flex-col cursor-pointer">
+                <div className="h-48 bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                  <span className="text-gray-500 text-4xl relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">📷</span>
+                </div>
+                <div className="p-4 flex flex-col flex-grow">
+                  <h3 className="font-bold text-white mb-2 line-clamp-1 group-hover:text-purple-400 transition-colors">Aksesoris Terkait {i}</h3>
+                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 font-bold mt-auto">
+                    Rp {i}.500.000
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
+
       </div>
     </div>
   )

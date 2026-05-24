@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([])
@@ -96,119 +95,165 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading products...</p>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+        {/* Background Gradient & Glow Effects */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/20 blur-[120px] rounded-full"></div>
+        </div>
+        <div className="text-center z-10">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
+          <p className="text-gray-400 font-medium tracking-wide animate-pulse">Memuat katalog produk...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-[#0a0a0f] text-gray-200 font-sans relative overflow-hidden">
+      {/* Background Gradient & Glow Effects */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-900/10 blur-[150px] rounded-full"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full"></div>
+      </div>
+
+      {/* Large Faint Watermark Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.02] pointer-events-none select-none overflow-hidden w-full text-center fixed">
+        <h1 className="text-[12vw] font-black tracking-tighter whitespace-nowrap">PRODUCTS</h1>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Semua Produk</h1>
-          <p className="text-gray-600">Temukan peralatan fotografi terbaik untuk kebutuhan Anda</p>
+        <div className="mb-10">
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 mb-3 pb-1">
+            Katalog Produk
+          </h1>
+          <p className="text-gray-400 text-lg">Temukan peralatan fotografi terbaik untuk kebutuhan Anda</p>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Filters Panel (Glassmorphism) */}
+        <div className="bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] p-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-300 mb-2">
                 Cari Produk
               </label>
-              <input
-                type="text"
-                placeholder="Cari nama produk..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Ketik nama atau deskripsi..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="appearance-none block w-full px-4 py-3 pl-11 bg-[#0a0a0f]/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all"
+                />
+                <svg className="w-5 h-5 absolute left-4 top-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
             </div>
 
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-bold text-gray-300 mb-2">
                 Kategori
               </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Semua Kategori</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="appearance-none block w-full px-4 py-3 bg-[#0a0a0f]/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all cursor-pointer"
+                >
+                  <option value="" className="bg-[#0a0a0f] text-gray-200">Semua Kategori</option>
+                  {categories.map(category => (
+                    <option key={category} value={category} className="bg-[#0a0a0f] text-gray-200">
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              {/* Product Image */}
-              <div className="h-48 bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500 text-4xl">📷</span>
+            <div key={product.id} className="group bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] overflow-hidden hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all duration-300 flex flex-col">
+              
+              {/* Product Image Placeholder */}
+              <div className="h-56 bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                <span className="text-gray-500 text-5xl relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">📷</span>
               </div>
 
               {/* Product Info */}
-              <div className="p-4">
-                <span className="text-xs text-blue-600 font-medium uppercase tracking-wide">
+              <div className="p-5 flex flex-col flex-grow">
+                <span className="text-[10px] text-purple-400 font-bold uppercase tracking-widest mb-2">
                   {product.category}
                 </span>
-                <h3 className="text-lg font-semibold mt-1 mb-2 text-gray-800 line-clamp-2">
+                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-blue-400 transition-colors">
                   {product.name}
                 </h3>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                <p className="text-sm text-gray-400 mb-4 line-clamp-2 flex-grow">
                   {product.description}
                 </p>
                 
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xl font-bold text-blue-600">
-                    {formatPrice(product.price)}
-                  </span>
-                  <span className="text-sm text-gray-500">
+                <div className="flex items-end justify-between mb-5">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">Harga</p>
+                    <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                      {formatPrice(product.price)}
+                    </span>
+                  </div>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-md border ${product.stock > 0 ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
                     Stok: {product.stock}
                   </span>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 mt-auto">
                   <button 
-                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
+                    className="w-full relative flex justify-center py-2.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-purple-500 to-blue-400 hover:from-purple-400 hover:to-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:from-purple-500 disabled:hover:to-blue-400"
                     disabled={product.stock === 0}
                   >
                     {product.stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis'}
                   </button>
-                  <Link 
+                  <a 
                     href={`/products/${product.id}`}
-                    className="block w-full text-center border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50 transition-colors"
+                    className="block w-full text-center py-2.5 px-4 border border-white/10 rounded-xl shadow-sm text-sm font-bold text-gray-300 bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#13141f] focus:ring-gray-500 transition-all duration-300"
                   >
                     Lihat Detail
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* No Products Found */}
+        {/* No Products Found State */}
         {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Produk tidak ditemukan
+          <div className="bg-[#13141f]/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.5)] text-center py-16 px-4 mt-8">
+            <div className="text-6xl mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">🔍</div>
+            <h3 className="text-2xl font-bold text-white mb-3">
+              Produk Tidak Ditemukan
             </h3>
-            <p className="text-gray-600">
-              Coba ubah filter atau kata kunci pencarian Anda
+            <p className="text-gray-400 max-w-md mx-auto">
+              Maaf, kami tidak dapat menemukan produk yang sesuai dengan filter atau kata kunci "{searchTerm}". Silakan coba kata kunci lain.
             </p>
+            <button 
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('');
+              }}
+              className="mt-6 inline-flex items-center justify-center px-6 py-2.5 border border-white/10 text-sm font-bold rounded-xl text-gray-300 bg-white/5 hover:bg-white/10 transition-all duration-300"
+            >
+              Reset Filter
+            </button>
           </div>
         )}
       </div>
