@@ -153,27 +153,22 @@ export function CartProvider({ children }) {
   // Checkout function
   const checkout = async (orderData = {}) => {
     try {
-      console.log('Starting checkout with items:', state.items)
-      console.log('Order data:', orderData)
-      
       if (!state.items || state.items.length === 0) {
         return { order: null, error: 'Cart is empty' }
       }
       
       // Add timeout to prevent infinite loading
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Checkout timeout - please try again')), 30000) // 30 second timeout
+        setTimeout(() => reject(new Error('Checkout timeout - please try again')), 30000)
       })
       
       const checkoutPromise = OrderService.createOrder(state.items, orderData)
       
       const result = await Promise.race([checkoutPromise, timeoutPromise])
-      console.log('Checkout result:', result)
       
       if (result.order) {
         // Clear cart on successful order
         clearCart()
-        console.log('Cart cleared after successful order')
       }
       
       return result

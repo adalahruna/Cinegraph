@@ -5,11 +5,15 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '../../contexts/CartContext'
 import { AuthService } from '../../lib/services/auth'
+import PaymentModal from '../../components/PaymentModal'
+import { PaymentService } from '../../lib/services/payment'
 
 export default function CartPage() {
   const { items: cartItems, updateQuantity, removeFromCart, totalPrice, checkout } = useCart()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const [checkoutError, setCheckoutError] = useState('')
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [currentOrder, setCurrentOrder] = useState(null)
   const router = useRouter()
 
   const formatPrice = (price) => {
@@ -25,17 +29,15 @@ export default function CartPage() {
     setCheckoutError('')
 
     try {
-      console.log('Starting checkout process...')
-      
       // Check if user is logged in
       const { user } = await AuthService.getCurrentUser()
       if (!user) {
-        console.log('User not logged in, redirecting to login')
         router.push('/login?redirect=/cart')
         return
       }
-      
-      console.log('User is logged in:', user.id)
+
+      console.log('Starting checkout for', cartItems.length, 'items')
+      const startTime = Date.now()
 
       // Process checkout
       const result = await checkout({
@@ -48,23 +50,47 @@ export default function CartPage() {
         },
         notes: 'Order from cart'
       })
-      
-      console.log('Checkout completed with result:', result)
+
+      const duration = Date.now() - startTime
+      console.log('Checkout completed in', duration, 'ms')
 
       if (result.error) {
-        console.error('Checkout failed:', result.error)
+        console.error('Checkout error:', result.error)
         setCheckoutError(result.error)
       } else {
-        console.log('Checkout successful, redirecting to profile')
-        // Success - redirect to success page or show success message
-        alert('Pesanan berhasil dibuat! Terima kasih telah berbelanja di CineGraph.')
-        router.push('/profile') // Redirect to profile to see order history
+        console.log('Order created:', result.order.id)
+        // Show payment modal instead of redirecting
+        setCurrentOrder({
+          id: result.order.id,
+          total: result.order.total_amount
+        })
+        setShowPaymentModal(true)
       }
     } catch (error) {
-      console.error('Checkout error in handleCheckout:', error)
+      console.error('Checkout exception:', error)
       setCheckoutError(error.message || 'Terjadi kesalahan saat memproses pesanan')
     } finally {
       setIsCheckingOut(false)
+    }
+  }
+
+  const handlePaymentSubmit = async (paymentData) => {
+    try {
+      console.log('Uploading payment proof for order:', currentOrder.id)
+      
+      const result = await PaymentService.uploadPaymentProof(currentOrder.id, paymentData)
+      
+      console.log('Upload result:', result)
+      
+      if (result.success) {
+        alert('Bukti pembayaran berhasil dikirim! Admin akan mengkonfirmasi pembayaran Anda.')
+        router.push('/profile')
+      } else {
+        throw new Error(result.error || 'Upload failed')
+      }
+    } catch (error) {
+      console.error('Payment submission error:', error)
+      throw error // Re-throw to be caught by PaymentModal
     }
   }
 
@@ -265,6 +291,14 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        orderData={currentOrder}
+        onPaymentSubmit={handlePaymentSubmit}
+      />
     </div>
   )
 }

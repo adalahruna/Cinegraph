@@ -13,37 +13,33 @@ export default function LoginPage() {
   const [message, setMessage] = useState('')
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-  setLoading(true)
-  setMessage('')
+    e.preventDefault()
+    setLoading(true)
+    setMessage('')
 
-  const result = await AuthService.signIn(email, password)
+    const result = await AuthService.signIn(email, password)
 
-  console.log("LOGIN RESULT:", result)
+    if (result.error) {
+      setMessage(result.error)
+      setLoading(false)
+      return
+    }
 
-  if (result.error) {
-    setMessage(result.error)
-    setLoading(false)
-    return
-  }
+    // AuthService.signIn now always returns a profile (fallback if needed)
+    if (!result.profile) {
+      setMessage("Login gagal - silakan coba lagi")
+      setLoading(false)
+      return
+    }
 
-  // 🔥 HANDLE KALAU PROFILE NULL
-  if (!result.profile) {
-    setMessage("Profile tidak ditemukan (cek RLS / database)")
-    setLoading(false)
-    return
-  }
+    const role = result.profile.role
 
-  const role = result.profile.role
-  console.log("ROLE:", role)
-
-  if (role === 'admin') {
-    router.push('/dashboard')
-  } else {
-    router.push('/')
-  }
-
-  setLoading(false)
+    // Redirect based on role
+    if (role === 'admin') {
+      router.push('/dashboard')
+    } else {
+      router.push('/')
+    }
   }
 
   return (

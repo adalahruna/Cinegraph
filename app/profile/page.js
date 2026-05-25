@@ -74,7 +74,13 @@ export default function ProfilePage() {
     switch (status) {
       case 'pending':
         return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
-      case 'completed':
+      case 'awaiting_payment':
+        return 'bg-orange-500/10 border-orange-500/20 text-orange-400'
+      case 'confirmed':
+        return 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+      case 'shipped':
+        return 'bg-purple-500/10 border-purple-500/20 text-purple-400'
+      case 'delivered':
         return 'bg-green-500/10 border-green-500/20 text-green-400'
       case 'cancelled':
         return 'bg-red-500/10 border-red-500/20 text-red-400'
@@ -87,12 +93,48 @@ export default function ProfilePage() {
     switch (status) {
       case 'pending':
         return 'Menunggu Pembayaran'
-      case 'completed':
+      case 'awaiting_payment':
+        return 'Menunggu Konfirmasi'
+      case 'confirmed':
+        return 'Dikonfirmasi'
+      case 'shipped':
+        return 'Dikirim'
+      case 'delivered':
         return 'Selesai'
       case 'cancelled':
         return 'Dibatalkan'
       default:
         return status
+    }
+  }
+
+  const getPaymentStatusColor = (paymentStatus) => {
+    switch (paymentStatus) {
+      case 'pending':
+        return 'bg-gray-500/10 border-gray-500/20 text-gray-400'
+      case 'uploaded':
+        return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400'
+      case 'confirmed':
+        return 'bg-green-500/10 border-green-500/20 text-green-400'
+      case 'rejected':
+        return 'bg-red-500/10 border-red-500/20 text-red-400'
+      default:
+        return 'bg-gray-500/10 border-gray-500/20 text-gray-400'
+    }
+  }
+
+  const getPaymentStatusText = (paymentStatus) => {
+    switch (paymentStatus) {
+      case 'pending':
+        return 'Belum Bayar'
+      case 'uploaded':
+        return 'Menunggu Verifikasi'
+      case 'confirmed':
+        return 'Pembayaran Dikonfirmasi'
+      case 'rejected':
+        return 'Pembayaran Ditolak'
+      default:
+        return paymentStatus
     }
   }
 
@@ -276,13 +318,20 @@ export default function ProfilePage() {
                               {formatDate(order.created_at)}
                             </p>
                           </div>
-                          <div className="flex items-center gap-4">
-                            <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(order.status)}`}>
-                              {getStatusText(order.status)}
-                            </span>
-                            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-                              {formatPrice(order.total_amount)}
-                            </span>
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getStatusColor(order.status)}`}>
+                                {getStatusText(order.status)}
+                              </span>
+                              <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                                {formatPrice(order.total_amount)}
+                              </span>
+                            </div>
+                            {order.payment_status && (
+                              <span className={`px-3 py-1 rounded-md text-xs font-medium border ${getPaymentStatusColor(order.payment_status)}`}>
+                                💳 {getPaymentStatusText(order.payment_status)}
+                              </span>
+                            )}
                           </div>
                         </div>
 
